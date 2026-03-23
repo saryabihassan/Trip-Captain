@@ -1,19 +1,22 @@
-# Mission Brief: Topic 4 - Tier 1 API Ingestion
+# Mission Brief: Topic 5 - Tier 2 NLP Parameter Extractor
 
 ## Context
-Phase 1 of Trip Captain requires raw logistical data (Flights, Hotels, Weather) from external sources.
+Phase 1 of Trip Captain has Tier 1 raw data. We now need to process natural language input to extract structured intent and parameters.
 
 ## Objective
-Implement the Tier 1 API Ingestion logic in `backend/tier_1_ingestion/`.
+Implement the Tier 2 NLP Parameter Extractor in `backend/tier_2_nlp/`.
 
 ## Data Tier
-- **Tier 1**: Raw data ingestion into `trip_state.json`.
+- **Tier 2**: NLP Parameter Extraction.
 
 ## Technical Constraints
-1. **Source**: Use a mockable API client (Axios) to simulate fetching travel data.
-2. **Schema Validation**: Use the `TripStateManager`'s `updateTierData(1, data)` method to ensure the data is validated against the schema before being persisted to `trip_state.json`.
-3. **Status Check**: Ensure the trip status is 'active' or 'draft' before ingestion.
-4. **Output**: TypeScript implementation that can be triggered to simulate a data fetch.
+1. **Source**: Accept a natural language string (e.g., "I want to go to London for 7 days").
+2. **Logic**: Implement a parser (regex-based or simple logic) to extract:
+    - `intent`: e.g., "vacation_planning"
+    - `parameters`: e.g., `{ "destination": "London", "duration_days": 7 }`
+3. **Integration**: Use `TripStateManager.updateTierData(2, data)` to persist the extracted parameters.
+4. **Validation**: Ensure the extraction results conform to the `tier_2_nlp` block in `database_schema.json`.
+5. **Output**: TypeScript implementation.
 
 ## Reference Files
 - `architecture_spec.md`
@@ -21,4 +24,4 @@ Implement the Tier 1 API Ingestion logic in `backend/tier_1_ingestion/`.
 - `backend/state_manager/TripStateManager.ts`
 
 ---
-*No fluff. No mocking Tier 1 data (use realistic structures). Output only executable code.*
+*No fluff. No mocking Tier 1 data. Output only executable code.*
