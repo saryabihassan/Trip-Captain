@@ -1,4 +1,5 @@
 import { TripStateManager } from '../../backend/state_manager/TripStateManager.js';
+import { TripState } from '../../backend/state_manager/types/TripStateSchema.js';
 
 export interface Alert {
   type: 'critical' | 'warning' | 'info';
@@ -9,17 +10,11 @@ export interface Alert {
 }
 
 export class ProactiveAlertEngine {
-  private stateManager: TripStateManager;
-
-  constructor() {
-    this.stateManager = new TripStateManager();
-  }
-
   /**
    * Scans Tier 1 raw data and Tier 3 synthesis for logistical delta changes.
    */
-  public async scanForAlerts(): Promise<void> {
-    const currentState = await this.stateManager.read();
+  public async scanForAlerts(currentState: TripState): Promise<TripState> {
+    const stateManager = new TripStateManager(currentState);
 
     if (!currentState.tier_1_raw || !currentState.tier_3_logistics) {
       throw new Error('Alert scan failed: Tier 1 and Tier 3 data are required.');
@@ -76,8 +71,10 @@ export class ProactiveAlertEngine {
     console.log(`✅ Alert scan complete. Generated ${alerts.length} alerts.`);
 
     // 4. Update state to Tier 4
-    await this.stateManager.updateTierData(4, alerts);
+    const newState = await stateManager.updateTierData(4, alerts);
     
     console.log('✅ Tier 4 Proactive Alert Logic Complete.');
+    return newState;
   }
 }
+

@@ -1,4 +1,5 @@
 import { TripStateManager } from '../../backend/state_manager/TripStateManager.js';
+import { TripState } from '../../backend/state_manager/types/TripStateSchema.js';
 
 export interface ItineraryItem {
   type: 'flight' | 'hotel';
@@ -18,17 +19,11 @@ export interface SynthesisResult {
 }
 
 export class LogisticsSynthesisEngine {
-  private stateManager: TripStateManager;
-
-  constructor() {
-    this.stateManager = new TripStateManager();
-  }
-
   /**
    * Synthesizes Tier 1 and Tier 2 data into a Tier 3 itinerary and cost audit.
    */
-  public async synthesize(): Promise<void> {
-    const currentState = await this.stateManager.read();
+  public async synthesize(currentState: TripState): Promise<TripState> {
+    const stateManager = new TripStateManager(currentState);
 
     if (!currentState.tier_1_raw || !currentState.tier_2_nlp) {
       throw new Error('Synthesis failed: Tier 1 and Tier 2 data are required.');
@@ -87,8 +82,10 @@ export class LogisticsSynthesisEngine {
     console.log('✅ Estimated Total Cost:', totalCost);
 
     // Update state to Tier 3
-    await this.stateManager.updateTierData(3, result);
+    const newState = await stateManager.updateTierData(3, result);
     
     console.log('✅ Tier 3 Logistics Synthesis Complete.');
+    return newState;
   }
 }
+

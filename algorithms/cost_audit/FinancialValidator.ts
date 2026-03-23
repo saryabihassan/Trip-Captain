@@ -1,29 +1,15 @@
 import { TripStateManager } from '../../backend/state_manager/TripStateManager.js';
-
-export interface AuditResult {
-  base_total: number;
-  service_fee: number;
-  taxes: number;
-  grand_total: number;
-  currency: string;
-  audit_trail: string;
-  validation_status: 'valid' | 'discrepancy_detected';
-}
+import { TripState } from '../../backend/state_manager/types/TripStateSchema.js';
 
 export class FinancialValidator {
-  private stateManager: TripStateManager;
   private readonly SERVICE_FEE_RATE = 0.05; // 5%
   private readonly TAX_RATE = 0.10; // 10%
-
-  constructor() {
-    this.stateManager = new TripStateManager();
-  }
 
   /**
    * Audits the financial data in Tier 3 logistics.
    */
-  public async audit(): Promise<void> {
-    const currentState = await this.stateManager.read();
+  public async audit(currentState: TripState): Promise<TripState> {
+    const stateManager = new TripStateManager(currentState);
 
     if (!currentState.tier_3_logistics) {
       throw new Error('Audit failed: Tier 3 logistics data is required.');
@@ -68,8 +54,10 @@ export class FinancialValidator {
     console.log(`✅ Grand Total (Inc. Fees/Taxes): ${grandTotal.toFixed(2)} ${auditResult.cost_audit.currency}`);
 
     // 3. Update state to include the audited financial data (remain at Tier 3 status but update data)
-    await this.stateManager.updateTierData(3, auditResult);
+    const newState = await stateManager.updateTierData(3, auditResult);
     
     console.log('✅ Tier 3 Financial Audit & Fee Validation Complete.');
+    return newState;
   }
 }
+

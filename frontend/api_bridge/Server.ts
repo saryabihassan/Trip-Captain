@@ -19,9 +19,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const stateManager = new TripStateManager();
-const nlpExtractor = new NLPParameterExtractor();
+// Initialize engine instances once
 const ingestor = new Tier1Ingestor();
+const nlpExtractor = new NLPParameterExtractor();
 const synthesisEngine = new LogisticsSynthesisEngine();
 const costValidator = new FinancialValidator();
 const optimizer = new LogisticsOptimizer();
@@ -42,33 +42,21 @@ app.post('/api/chat', async (req: Request, res: Response) => {
   try {
     console.log(`\n--- Orchestrating Build Sequence for: "${prompt}" ---`);
     
-    // 1. Initialize State if needed
+    // 1. Initialize State
+    const stateManager = new TripStateManager();
     const tripId = `TRIP-${Date.now()}`;
-    await stateManager.initialize(tripId);
+    let state = await stateManager.initialize(tripId);
     
-    // 2. Tier 1: Ingestion (Mocked raw data)
-    await ingestor.ingest();
-    
-    // 3. Tier 2: NLP Extraction
-    await nlpExtractor.process(prompt);
-    
-    // 4. Tier 3: Logistics Synthesis
-    await synthesisEngine.synthesize();
-    
-    // 5. Tier 3: Financial Audit
-    await costValidator.audit();
-    
-    // 6. Tier 3: Optimization
-    await optimizer.optimize();
-    
-    // 7. Tier 4: Proactive Alerts
-    await alertEngine.scanForAlerts();
-    
-    // 8. Tier 5: Persona Filtering
-    await personaEngine.applyPersona(persona as PersonaType);
+    // 2. Orchestration Chain (In-Memory State Passing)
+    state = await ingestor.ingest(state);
+    state = await nlpExtractor.process(prompt, state);
+    state = await synthesisEngine.synthesize(state);
+    state = await costValidator.audit(state);
+    state = await optimizer.optimize(state);
+    state = await alertEngine.scanForAlerts(state);
+    state = await personaEngine.applyPersona(persona as PersonaType, state);
 
-    const finalState = await stateManager.read();
-    res.json(finalState);
+    res.json(state);
     
     console.log(`--- Orchestration Complete for: ${tripId} ---\n`);
   } catch (error: any) {
@@ -86,6 +74,8 @@ app.post('/api/chat', async (req: Request, res: Response) => {
  */
 app.get('/api/state', async (_req: Request, res: Response) => {
   try {
+    // Always use a fresh state manager for GET requests to read from disk
+    const stateManager = new TripStateManager();
     const state = await stateManager.read();
     res.json(state);
   } catch (error: any) {

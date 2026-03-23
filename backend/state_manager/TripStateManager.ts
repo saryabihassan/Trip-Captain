@@ -5,8 +5,13 @@ import { TripState, TripStateSchema } from './types/TripStateSchema.js';
 
 export class TripStateManager {
   private static STATE_FILE = path.resolve(process.cwd(), 'trip_state.json');
+  private stateCache: TripState | null = null;
 
-  constructor() {}
+  constructor(initialState?: TripState) {
+    if (initialState) {
+      this.stateCache = initialState;
+    }
+  }
 
   /**
    * Initializes a new state file if it doesn't exist.
@@ -22,13 +27,18 @@ export class TripStateManager {
     };
 
     await this.save(initialState);
+    this.stateCache = initialState;
     return initialState;
   }
 
   /**
-   * Reads and validates the current state.
+   * Reads and validates the current state from cache or disk.
    */
   public async read(): Promise<TripState> {
+    if (this.stateCache) {
+      return this.stateCache;
+    }
+
     if (!(await pathExists(TripStateManager.STATE_FILE))) {
       throw new Error('Trip state file not found. Run initialize() first.');
     }
@@ -39,12 +49,13 @@ export class TripStateManager {
     if (!result.success) {
       throw new Error(`Schema Validation Failed: ${result.error.message}`);
     }
-
+    
+    this.stateCache = result.data;
     return result.data;
   }
 
   /**
-   * Validates and saves the state atomically to avoid corruption.
+   * Validates and saves the state atomically and updates the cache.
    */
   public async save(state: TripState): Promise<void> {
     const result = TripStateSchema.safeParse(state);
@@ -54,6 +65,8 @@ export class TripStateManager {
 
     // Update timestamp before saving
     state.metadata.last_updated = new Date().toISOString();
+    
+    this.stateCache = state;
 
     const tempFile = `${TripStateManager.STATE_FILE}.tmp`;
     await writeJson(tempFile, state, { spaces: 2 });
@@ -63,7 +76,7 @@ export class TripStateManager {
   /**
    * Transitions the trip status following valid business rules.
    */
-  public async transitionStatus(newStatus: TripState['metadata']['status']): Promise<void> {
+  public async transitionStatus(newStatus: TripState['metadata']['status']): Promise<TripState> {
     const currentState = await this.read();
     const currentStatus = currentState.metadata.status;
 
@@ -80,12 +93,13 @@ export class TripStateManager {
 
     currentState.metadata.status = newStatus;
     await this.save(currentState);
+    return currentState;
   }
 
   /**
    * Updates specific tier data and advances the current_tier level.
    */
-  public async updateTierData(tier: number, data: any): Promise<void> {
+  public async updateTierData(tier: number, data: any): Promise<TripState> {
     const currentState = await this.read();
     
     switch (tier) {
@@ -99,5 +113,6 @@ export class TripStateManager {
 
     currentState.metadata.current_tier = tier;
     await this.save(currentState);
+    return currentState;
   }
 }

@@ -1,5 +1,5 @@
-import axios from 'axios';
 import { TripStateManager } from '../state_manager/TripStateManager.js';
+import { TripState } from '../state_manager/types/TripStateSchema.js';
 
 export interface FlightData {
   flight_number: string;
@@ -17,17 +17,10 @@ export interface HotelData {
 }
 
 export class Tier1Ingestor {
-  private stateManager: TripStateManager;
-
-  constructor() {
-    this.stateManager = new TripStateManager();
-  }
-
   /**
    * Simulates fetching raw travel data from external APIs.
-   * In a real scenario, this would call actual travel provider APIs.
    */
-  public async fetchRawData(): Promise<{ flights: FlightData[]; hotels: HotelData[] }> {
+  private async fetchRawData(): Promise<{ flights: FlightData[]; hotels: HotelData[] }> {
     // Simulating API response data
     const mockData = {
       flights: [
@@ -53,10 +46,10 @@ export class Tier1Ingestor {
   }
 
   /**
-   * Ingests raw data into the trip_state.json file.
+   * Ingests raw data into the trip state.
    */
-  public async ingest(): Promise<void> {
-    const currentState = await this.stateManager.read();
+  public async ingest(currentState: TripState): Promise<TripState> {
+    const stateManager = new TripStateManager(currentState);
     
     // Check status constraint
     if (!['draft', 'active'].includes(currentState.metadata.status)) {
@@ -67,9 +60,11 @@ export class Tier1Ingestor {
     
     const rawData = await this.fetchRawData();
     
-    // Update state using the manager (Topic 3 requirement)
-    await this.stateManager.updateTierData(1, rawData);
+    // Update state using the manager
+    const newState = await stateManager.updateTierData(1, rawData);
     
     console.log('✅ Tier 1 Ingestion Complete.');
+    return newState;
   }
 }
+

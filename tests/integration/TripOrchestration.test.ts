@@ -35,21 +35,35 @@ async function runTests() {
 
     // 2. Test TripStateManager: State Transitions
     console.log('\n--- Test 2: TripStateManager State Transitions ---');
-    try {
-      // Transition from draft -> active (Valid)
-      await manager.transitionStatus('active');
+    // Re-initialize for a clean state
+    const transitionManager = new TripStateManager();
+    await transitionManager.initialize('TRANSITION-TEST-123');
+    
+    // Test Valid Transition: draft -> active
+    const activeState = await transitionManager.transitionStatus('active');
+    if (activeState.metadata.status === 'active') {
       console.log('✅ Transition draft -> active successful.');
+    } else {
+      console.log('❌ Error: Transition draft -> active failed.');
+    }
 
-      // Transition from active -> completed (Valid)
-      await manager.transitionStatus('completed');
+    // Test Valid Transition: active -> completed
+    const completedState = await transitionManager.transitionStatus('completed');
+    if (completedState.metadata.status === 'completed') {
       console.log('✅ Transition active -> completed successful.');
+    } else {
+      console.log('❌ Error: Transition active -> completed failed.');
+    }
 
-      // Transition from completed -> active (Invalid)
-      await manager.transitionStatus('active');
+
+    // Test Invalid Transition: completed -> active
+    try {
+      await transitionManager.transitionStatus('active');
       console.log('❌ Error: Transition completed -> active should have failed.');
     } catch (error: any) {
       console.log(`✅ Transition correctly blocked invalid transition: ${error.message}`);
     }
+
 
     // 3. Test Full Orchestration (Tiers 1-5) via API
     console.log('\n--- Test 3: Full 5-Tier Orchestration via API ---');

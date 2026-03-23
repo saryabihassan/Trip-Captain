@@ -1,4 +1,5 @@
 import { TripStateManager } from '../../backend/state_manager/TripStateManager.js';
+import { TripState } from '../../backend/state_manager/types/TripStateSchema.js';
 
 export interface PersonaUIConfig {
   active_filter: string;
@@ -12,23 +13,17 @@ export interface PersonaUIConfig {
 export type PersonaType = 'Luxury' | 'Budget' | 'Family';
 
 export class PersonaFilterEngine {
-  private stateManager: TripStateManager;
-
-  constructor() {
-    this.stateManager = new TripStateManager();
-  }
-
   /**
    * Applies a persona-based filter to the trip state and updates Tier 5 UI data.
    */
-  public async applyPersona(persona: PersonaType): Promise<void> {
-    const currentState = await this.stateManager.read();
+  public async applyPersona(persona: PersonaType, currentState: TripState): Promise<TripState> {
+    const stateManager = new TripStateManager(currentState);
 
     if (!currentState.tier_3_logistics) {
       throw new Error('Persona filtering failed: Tier 3 logistics data is required.');
     }
 
-    const { itinerary, cost_audit } = currentState.tier_3_logistics;
+    const { cost_audit } = currentState.tier_3_logistics;
     
     console.log(`Applying persona filter: "${persona}" to Trip ID: ${currentState.trip_id}...`);
 
@@ -71,8 +66,10 @@ export class PersonaFilterEngine {
     console.log(`✅ Display Title: ${displayTitle}`);
 
     // Update state to Tier 5
-    await this.stateManager.updateTierData(5, tier5Data);
+    const newState = await stateManager.updateTierData(5, tier5Data);
     
     console.log('✅ Tier 5 Persona Filter Engine Complete.');
+    return newState;
   }
 }
+

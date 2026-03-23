@@ -1,23 +1,12 @@
 import { TripStateManager } from '../../backend/state_manager/TripStateManager.js';
-
-export interface OptimizationMetadata {
-  optimization_type: 'chronological_cost';
-  score: number;
-  optimized_at: string;
-}
+import { TripState } from '../../backend/state_manager/types/TripStateSchema.js';
 
 export class LogisticsOptimizer {
-  private stateManager: TripStateManager;
-
-  constructor() {
-    this.stateManager = new TripStateManager();
-  }
-
   /**
    * Refines the synthesized itinerary for chronological efficiency and cost validation.
    */
-  public async optimize(): Promise<void> {
-    const currentState = await this.stateManager.read();
+  public async optimize(currentState: TripState): Promise<TripState> {
+    const stateManager = new TripStateManager(currentState);
 
     if (!currentState.tier_3_logistics) {
       throw new Error('Optimization failed: Tier 3 logistics data is required.');
@@ -58,8 +47,10 @@ export class LogisticsOptimizer {
     console.log(`✅ Chronological sorting applied. Optimization Score: ${score.toFixed(2)}`);
 
     // 3. Update state (stay at Tier 3 but update the refined logistics)
-    await this.stateManager.updateTierData(3, result);
+    const newState = await stateManager.updateTierData(3, result);
     
     console.log('✅ Tier 3 Pathfinding & Optimization Complete.');
+    return newState;
   }
 }
+
