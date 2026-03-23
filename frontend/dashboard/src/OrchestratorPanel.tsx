@@ -1,5 +1,5 @@
 import React from 'react';
-import { Send, Activity } from 'lucide-react';
+import { Send, Sparkles } from 'lucide-react';
 
 interface Props {
   prompt: string;
@@ -15,23 +15,27 @@ export const OrchestratorPanel: React.FC<Props> = ({
   prompt, setPrompt, persona, setPersona, loading, error, onSubmit 
 }) => {
   return (
-    <section className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-      <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-        <Activity size={20} className="text-blue-500" /> Orchestrator
+    <section className="bg-white/80 backdrop-blur-xl p-6 rounded-3xl shadow-sm border border-slate-200 relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
+      
+      <h2 className="text-xl font-extrabold mb-6 flex items-center gap-2 text-slate-800 tracking-tight">
+        <Sparkles size={22} className="text-indigo-500" /> AI Orchestrator
       </h2>
-      <form onSubmit={onSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">Persona</label>
-          <div className="grid grid-cols-3 gap-2">
+      
+      <form onSubmit={onSubmit} className="space-y-6">
+        {/* Persona Selection */}
+        <div className="space-y-3">
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Select Persona</label>
+          <div className="flex gap-2 p-1.5 bg-slate-100 rounded-2xl border border-slate-200/50">
             {['Luxury', 'Budget', 'Family'].map((p) => (
               <button
                 key={p}
                 type="button"
                 onClick={() => setPersona(p)}
-                className={`py-2 text-xs font-bold rounded-lg border transition-all ${
+                className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition-all duration-300 ${
                   persona === p 
-                  ? 'bg-blue-600 text-white border-blue-600 shadow-md' 
-                  : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300'
+                  ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-slate-200/50 scale-[1.02]' 
+                  : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
                 }`}
               >
                 {p}
@@ -39,22 +43,38 @@ export const OrchestratorPanel: React.FC<Props> = ({
             ))}
           </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">User Intent</label>
-          <textarea
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="e.g., I want to go to London for 7 days"
-            className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all h-24 text-sm"
-          />
+
+        {/* Prompt Input */}
+        <div className="space-y-3">
+          <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Trip Intent</label>
+          <div className="relative group">
+            <textarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="e.g., I want to go to Tokyo for 10 days"
+              className="w-full p-4 pb-14 rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none resize-none h-32 text-slate-700 placeholder:text-slate-400 shadow-inner"
+            />
+            <div className="absolute bottom-3 right-3">
+              <button
+                disabled={loading || !prompt.trim()}
+                className="bg-indigo-600 text-white p-3 rounded-xl font-bold flex items-center justify-center hover:bg-indigo-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <Send size={18} />
+                )}
+              </button>
+            </div>
+          </div>
         </div>
-        <button
-          disabled={loading}
-          className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-800 transition-all disabled:opacity-50"
-        >
-          {loading ? 'Orchestrating...' : <><Send size={18} /> Run Sequence</>}
-        </button>
-        {error && <p className="text-red-500 text-xs mt-2 font-medium">{error}</p>}
+
+        {error && (
+          <div className="p-3 bg-red-50 text-red-600 rounded-xl text-sm font-medium border border-red-100 flex items-start gap-2 animate-in fade-in slide-in-from-top-2">
+            <span className="shrink-0 mt-0.5">⚠️</span>
+            <p>{error}</p>
+          </div>
+        )}
       </form>
     </section>
   );

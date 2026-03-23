@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, Info } from 'lucide-react';
+import { AlertTriangle, Info, BellRing } from 'lucide-react';
 
 interface Props {
   alerts: any[];
@@ -7,21 +7,43 @@ interface Props {
 
 export const AlertBanner: React.FC<Props> = ({ alerts }) => {
   return (
-    <section className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-      <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-        <AlertTriangle size={20} className="text-amber-500" /> Proactive Alerts
-      </h3>
-      <div className="space-y-3">
-        {alerts.map((alert, i) => (
-          <div key={i} className={`flex items-start gap-3 p-3 rounded-xl border ${
-            alert.type === 'critical' ? 'bg-red-50 border-red-100 text-red-700' :
-            alert.type === 'warning' ? 'bg-amber-50 border-amber-100 text-amber-700' :
-            'bg-blue-50 border-blue-100 text-blue-700'
-          }`}>
-            {alert.type === 'critical' ? <AlertTriangle size={18} /> : <Info size={18} />}
-            <p className="text-xs font-medium leading-relaxed">{alert.message}</p>
+    <section className="bg-white/80 backdrop-blur-xl p-6 rounded-3xl shadow-sm border border-slate-200">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-lg font-extrabold flex items-center gap-2 text-slate-800 tracking-tight">
+          <BellRing size={20} className="text-amber-500" /> Proactive Alerts
+        </h3>
+        <span className="px-2.5 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold uppercase rounded-full">
+          Tier 4
+        </span>
+      </div>
+      
+      <div className="space-y-4">
+        {alerts.length === 0 ? (
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-center text-sm font-medium text-slate-500">
+            No active alerts detected.
           </div>
-        ))}
+        ) : (
+          alerts.map((alert, i) => (
+            <div key={i} className={`flex items-start gap-4 p-4 rounded-2xl border transition-all duration-300 hover:shadow-md ${
+              alert.type === 'critical' ? 'bg-red-50/50 border-red-200 text-red-800' :
+              alert.type === 'warning' ? 'bg-amber-50/50 border-amber-200 text-amber-800' :
+              'bg-blue-50/50 border-blue-200 text-blue-800'
+            }`}>
+              <div className={`p-2 rounded-xl bg-white shadow-sm border ${
+                alert.type === 'critical' ? 'border-red-100' :
+                alert.type === 'warning' ? 'border-amber-100' : 'border-blue-100'
+              }`}>
+                {alert.type === 'critical' ? <AlertTriangle size={18} className="text-red-500" /> : 
+                 alert.type === 'warning' ? <AlertTriangle size={18} className="text-amber-500" /> : 
+                 <Info size={18} className="text-blue-500" />}
+              </div>
+              <div className="mt-1">
+                <p className="text-xs font-bold uppercase tracking-wider opacity-60 mb-0.5">{alert.source}</p>
+                <p className="text-sm font-semibold leading-relaxed">{alert.message}</p>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </section>
   );

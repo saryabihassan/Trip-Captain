@@ -7,14 +7,16 @@ describe('DataSpectrumStatus Component', () => {
   it('renders correctly with currentTier = 3', () => {
     render(<DataSpectrumStatus currentTier={3} />);
 
-    expect(screen.getByText('Data Spectrum Status')).toBeInTheDocument();
+    // Updated search string to match the actual component text
+    expect(screen.getByText('Data Spectrum Progress')).toBeInTheDocument();
     
-    // Test that the check icons appear for completed tiers.
-    // Tiers 1, 2, 3 should be marked complete. We'll search for the elements manually.
-    const tier1Element = screen.getByText(/API Ingestion/i).closest('div');
-    const tier4Element = screen.getByText(/Proactive Alerts/i).closest('div');
+    // Check elements for correct class application 
+    const tier1Title = screen.getByText(/Tier 1: API Ingestion/i);
+    const tier4Title = screen.getByText(/Tier 4: Proactive Alerts/i);
     
-    expect(tier1Element?.className).toContain('text-blue-600'); // Completed styling
-    expect(tier4Element?.className).toContain('text-gray-400'); // Pending styling
+    expect(tier1Title.className).toContain('text-slate-800'); // Completed styling text
+    expect(tier4Title.className).toContain('text-slate-500'); // Pending styling text
   });
 });
+
+
