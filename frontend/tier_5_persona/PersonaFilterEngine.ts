@@ -36,20 +36,22 @@ export class PersonaFilterEngine {
     let highlights: string[] = [];
     let itineraryNotes: string[] = [];
 
+    const destination = currentState.tier_2_nlp?.parameters?.destination || 'Destination';
+
     switch (persona) {
       case 'Luxury':
-        displayTitle = 'Premium London Experience';
-        highlights = ['High-end accommodation at The Londoner', 'Direct flight (if available)'];
+        displayTitle = `Premium ${destination} Experience`;
+        highlights = [`High-end accommodation in ${destination}`, 'Direct flight (if available)'];
         itineraryNotes = ['Prioritize concierge service', 'Private airport transfers suggested'];
         break;
       case 'Budget':
-        displayTitle = 'Essential London Getaway';
+        displayTitle = `Essential ${destination} Getaway`;
         highlights = ['Efficient flight selection', 'Cost-effective accommodation'];
         itineraryNotes = [`Optimization Score: ${cost_audit.optimization_metadata?.score}`, 'Public transport recommended'];
         break;
       case 'Family':
-        displayTitle = 'Family-Friendly London Adventure';
-        highlights = ['Centrally located hotel', 'Managed logistics for ease of travel'];
+        displayTitle = `Family-Friendly ${destination} Adventure`;
+        highlights = [`Centrally located hotel in ${destination}`, 'Managed logistics for ease of travel'];
         itineraryNotes = ['Child-friendly amenities inquiry needed', 'Spacious room configuration confirmed'];
         break;
       default:

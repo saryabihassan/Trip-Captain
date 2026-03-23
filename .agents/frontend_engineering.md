@@ -1,30 +1,31 @@
-# Mission Brief: Topic 11 - Conversational API Bridge
+# Mission Brief: Topic 13 - UI Component Library
 
 ## Context
-Phase 1 of Trip Captain requires a communication bridge between the user interface and the backend logic (NLP, State Manager, etc.).
+Phase 1 of Trip Captain has a functional dashboard shell. We now need to refactor the monolithic `App.tsx` into a reusable UI Component Library to ensure scalability and maintainability.
 
 ## Objective
-Implement the Conversational API Bridge in `frontend/api_bridge/`.
+Implement the UI Component Library in `frontend/components/`.
 
 ## Data Tier
-- **Cross-Tier**: Orchestrates Tiers 1-5 via an API.
+- **Tier 5**: UI Presentation.
 
 ## Technical Constraints
-1. **Source**: Create an Express-based API server.
-2. **Endpoint**: Implement `POST /api/chat` that accepts a user prompt.
-3. **Logic**:
-    - Receive `{ prompt: string }`.
-    - Trigger the `NLPParameterExtractor` (Tier 2).
-    - Trigger the `LogisticsSynthesisEngine` (Tier 3) if parameters are sufficient.
-    - Return the updated `trip_state.json` or a summary.
-4. **Environment**: Use the `PORT` defined in `.env`.
+1. **Refactor**: Extract existing UI logic from `App.tsx` into modular components.
+2. **Components to Create**:
+    - `OrchestratorPanel.tsx`: Handles input and persona selection.
+    - `DataSpectrumStatus.tsx`: Visualizes Tier 1-5 progress.
+    - `PersonaHero.tsx`: Large header for Tier 5 data.
+    - `ItineraryList.tsx`: Displays Tier 3 chronological items.
+    - `CostAuditCard.tsx`: Displays financial and optimization data.
+    - `AlertBanner.tsx`: Displays Tier 4 proactive alerts.
+3. **Architecture**:
+    - Components should be functional and receive data via props.
+    - Use `lucide-react` for icons and `tailwind-merge` for styling.
+4. **Integration**: Update `frontend/dashboard/src/App.tsx` to use these new components.
 5. **Output**: TypeScript implementation.
 
 ## Reference Files
-- `architecture_spec.md`
-- `backend/state_manager/TripStateManager.ts`
-- `backend/tier_2_nlp/NLPParameterExtractor.ts`
-- `algorithms/tier_3_synthesis/LogisticsSynthesisEngine.ts`
+- `frontend/dashboard/src/App.tsx` (current monolith)
 
 ---
 *No fluff. No mocking Tier 1 data. Output only executable code.*
