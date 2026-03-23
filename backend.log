@@ -1,29 +1,32 @@
-✅ Conversational API Bridge running at http://localhost:3000
-
+node:events:486
+      throw er; // Unhandled 'error' event
+    
 --- Orchestrating Build Sequence for: "I want to go to Tokyo for 10 days" ---
-Ingesting Tier 1 data for Trip ID: TRIP-1774275649866...
-✅ Tier 1 Ingestion Complete.
+⚠️ Warning: Proceeding to Tier 2 without Tier 1 data.
 Processing prompt: "I want to go to Tokyo for 10 days"
 ✅ Extracted Intent: travel_planning
 ✅ Extracted Parameters: {"destination":"Tokyo","duration_days":10,"raw_prompt":"I want to go to Tokyo for 10 days"}
 ✅ Tier 2 NLP Parameter Extraction Complete.
+Ingesting Tier 1 data for Trip ID: TRIP-1774276478448...
+📡 Fetching live data for destination: Tokyo...
+✅ Tier 1 Ingestion Complete.
 Synthesizing logistics for Tokyo for 10 days...
 ✅ Logistics synthesis complete.
-✅ Estimated Total Cost: 500
+✅ Estimated Total Cost: 2000
 ✅ Tier 3 Logistics Synthesis Complete.
-✅ Financial Audit Complete for Trip: TRIP-1774275649866
-✅ Grand Total (Inc. Fees/Taxes): 577.50 USD
+✅ Financial Audit Complete for Trip: TRIP-1774276478448
+✅ Grand Total (Inc. Fees/Taxes): 2310.00 USD
 ✅ Tier 3 Financial Audit & Fee Validation Complete.
-Optimizing itinerary for Trip ID: TRIP-1774275649866...
+Optimizing itinerary for Trip ID: TRIP-1774276478448...
 ✅ Itinerary optimization complete.
-✅ Chronological sorting applied. Optimization Score: 95.00
+✅ Chronological sorting applied. Optimization Score: 80.00
 ✅ Tier 3 Pathfinding & Optimization Complete.
-Scanning for proactive alerts for Trip ID: TRIP-1774275649866...
-✅ Alert scan complete. Generated 0 alerts.
+Scanning for proactive alerts for Trip ID: TRIP-1774276478448...
+✅ Alert scan complete. Generated 1 alerts.
 ✅ Tier 4 Proactive Alert Logic Complete.
-Applying persona filter: "Luxury" to Trip ID: TRIP-1774275649866...
+Applying persona filter: "Luxury" to Trip ID: TRIP-1774276478448...
 ✅ Persona filter "Luxury" applied successfully.
 ✅ Display Title: Premium Tokyo Experience
 ✅ Tier 5 Persona Filter Engine Complete.
---- Orchestration Complete for: TRIP-1774275649866 ---
+--- Orchestration Complete for: TRIP-1774276478448 ---
 

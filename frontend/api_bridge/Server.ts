@@ -48,13 +48,17 @@ app.post('/api/chat', async (req: Request, res: Response) => {
     let state = await stateManager.initialize(tripId);
     
     // 2. Orchestration Chain (In-Memory State Passing)
-    state = await ingestor.ingest(state);
+    // CRITICAL FIX: NLP Extraction (Tier 2) must happen BEFORE API Ingestion (Tier 1) 
+    // so that we know *what* destination to fetch data for.
     state = await nlpExtractor.process(prompt, state);
+    state = await ingestor.ingest(state);
+    
     state = await synthesisEngine.synthesize(state);
     state = await costValidator.audit(state);
     state = await optimizer.optimize(state);
     state = await alertEngine.scanForAlerts(state);
     state = await personaEngine.applyPersona(persona as PersonaType, state);
+
 
     res.json(state);
     

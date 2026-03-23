@@ -39,14 +39,14 @@ export class LogisticsSynthesisEngine {
 
     // Filter Tier 1 flights for the destination
     const flights = (tier_1_raw as any).flights || [];
-    // Mock mapping: If destination is London, use LHR. Otherwise use first flight or mock one.
-    const relevantFlight = flights.find((f: any) => f.destination === 'LHR' || destination.toLowerCase().includes('london'));
     
-    if (relevantFlight || flights.length > 0) {
-      const flight = relevantFlight || flights[0];
+    // In our new architecture, Tier 1 has already fetched destination-specific flights.
+    // We just take the first available flight for synthesis.
+    if (flights.length > 0) {
+      const flight = flights[0];
       itinerary.push({
         type: 'flight',
-        description: `Flight ${flight.flight_number} from ${flight.origin} to ${destination}`,
+        description: `Flight ${flight.flight_number} from ${flight.origin} to ${flight.destination}`,
         start_date: flight.departure_time,
         end_date: flight.departure_time,
         price: 500
@@ -56,9 +56,9 @@ export class LogisticsSynthesisEngine {
 
     // Filter Tier 1 hotels for the destination
     const hotels = (tier_1_raw as any).hotels || [];
-    const relevantHotel = hotels.find((h: any) => h.address.includes(destination));
-
-    if (relevantHotel) {
+    
+    if (hotels.length > 0) {
+      const relevantHotel = hotels[0];
       itinerary.push({
         type: 'hotel',
         description: `Stay at ${relevantHotel.name}`,
@@ -68,6 +68,7 @@ export class LogisticsSynthesisEngine {
       });
       totalCost += 150 * duration_days;
     }
+
 
     const result: SynthesisResult = {
       itinerary,
