@@ -9,6 +9,7 @@ import { FinancialValidator } from '../../algorithms/cost_audit/FinancialValidat
 import { LogisticsOptimizer } from '../../algorithms/optimization/LogisticsOptimizer.js';
 import { ProactiveAlertEngine } from '../../algorithms/tier_4_alerts/ProactiveAlertEngine.js';
 import { PersonaFilterEngine, PersonaType } from '../tier_5_persona/PersonaFilterEngine.js';
+import { LearningsManager } from '../../scripts/LearningsManager.js';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ const costValidator = new FinancialValidator();
 const optimizer = new LogisticsOptimizer();
 const alertEngine = new ProactiveAlertEngine();
 const personaEngine = new PersonaFilterEngine();
+const learningsManager = new LearningsManager();
 
 /**
  * Endpoint to trigger the full 5-Tier Data Spectrum orchestration via a chat prompt.
@@ -71,6 +73,10 @@ app.post('/api/chat', async (req: Request, res: Response) => {
     console.log(`--- Orchestration Complete for: ${tripId} ---\n`);
   } catch (error: any) {
     console.error('❌ Orchestration Failed:', error.message);
+    
+    // Topic 15: Automation Loop
+    await learningsManager.autoAnalyze(`Orchestration: ${prompt}`, error);
+    
     res.status(500).json({ error: error.message });
   }
 });

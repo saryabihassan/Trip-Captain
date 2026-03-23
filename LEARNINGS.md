@@ -1,6 +1,7 @@
 # Trip Captain: Project Development Learnings
 
 ## Core Mandates & Architecture
+- **Schema Reliability:** Validating state at every tier (1-5) prevents downstream failures in synthesis and optimization logic.
 - **5-Tier Data Spectrum:** Strictly adhere to the Tiers (1: Ingestion, 2: NLP, 3: Synthesis, 4: Alerts, 5: Persona). Tier 2 should ideally follow Tier 1, and Tier 3 requires both.
 - **Single Source of Truth:** `trip_state.json` is the ground truth. All state changes MUST be validated against `database_schema.json` using the `TripStateManager`.
 - **Branching Policy:** Always commit directly to the `main` branch.
