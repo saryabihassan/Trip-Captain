@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TripCaptainState",
+  "type": "object",
+  "properties": {
+    "trip_id": { "type": "string" },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "status": { "enum": ["draft", "active", "completed", "cancelled"] },
+        "current_tier": { "type": "integer", "enum": [1, 2, 3, 4, 5] },
+        "last_updated": { "type": "string", "format": "date-time" }
+      }
+    },
+    "tier_1_raw": {
+      "type": "object",
+      "description": "Raw API Ingestion results"
+    },
+    "tier_2_nlp": {
+      "type": "object",
+      "properties": {
+        "intent": { "type": "string" },
+        "parameters": { "type": "object" }
+      }
+    },
+    "tier_3_logistics": {
+      "type": "object",
+      "properties": {
+        "itinerary": { "type": "array" },
+        "cost_audit": { "type": "object" }
+      }
+    },
+    "tier_4_alerts": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "tier_5_ui": {
+      "type": "object",
+      "properties": {
+        "active_filter": { "type": "string" },
+        "persona_data": { "type": "object" }
+      }
+    }
+  },
+  "required": ["trip_id", "metadata"]
+}

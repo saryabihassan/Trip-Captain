@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+dist/
+.env
+.venv/
+__pycache__/
+*.pyc
+
+# Project State
+trip_state.json
+
+# OS files
+.DS_Store
+Thumbs.db
