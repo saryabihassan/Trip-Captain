@@ -10,7 +10,7 @@ import {
   ItineraryList, 
   CostAuditCard, 
   AlertBanner 
-} from '../../components/index.ts';
+} from './index.ts';
 
 const API_BASE = 'http://localhost:3000/api';
 
