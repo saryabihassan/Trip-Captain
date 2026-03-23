@@ -21,7 +21,6 @@ export const DataSpectrumStatus: React.FC<Props> = ({ currentTier }) => {
       <div className="relative pl-3">
         {tiers.map((tier, index) => {
           const isComplete = currentTier >= tier.t;
-          const isPending = currentTier < tier.t;
 
           return (
             <div key={tier.t} className="relative pb-8 last:pb-0">
