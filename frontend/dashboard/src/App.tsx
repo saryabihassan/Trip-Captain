@@ -33,6 +33,7 @@ function App() {
   const [persona, setPersona] = useState('Luxury');
   const [tripState, setTripState] = useState<TripState | null>(null);
   const [loading, setLoading] = useState(false);
+  const [processingTier, setProcessingTier] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const fetchState = async () => {
@@ -53,12 +54,29 @@ function App() {
     if (!prompt.trim()) return;
 
     setLoading(true);
+    setTripState(null); // Clear state so user sees a transition
+    setProcessingTier(0);
     setError(null);
+
+    // Artificial delay to visualize the 5-Tier orchestration process
+    let currentStep = 0;
+    const interval = setInterval(() => {
+      currentStep++;
+      if (currentStep <= 4) setProcessingTier(currentStep);
+    }, 600); // 600ms per tier
+
     try {
-      const response = await axios.post(`${API_BASE}/chat`, { prompt, persona });
+      const [response] = await Promise.all([
+        axios.post(`${API_BASE}/chat`, { prompt, persona }),
+        new Promise(r => setTimeout(r, 2400)) // Wait for animation to reach tier 4
+      ]);
+      
+      clearInterval(interval);
+      setProcessingTier(5);
       setTripState(response.data);
       setPrompt('');
     } catch (err: any) {
+      clearInterval(interval);
       setError(err.response?.data?.error || 'Failed to connect to API Bridge');
     } finally {
       setLoading(false);
@@ -106,7 +124,7 @@ function App() {
             onSubmit={handleSubmit}
           />
 
-          <DataSpectrumStatus currentTier={tripState?.metadata.current_tier || 0} />
+          <DataSpectrumStatus currentTier={tripState ? tripState.metadata.current_tier : processingTier} />
         </div>
 
         {/* Right Column: Results & Visuals */}
@@ -114,10 +132,10 @@ function App() {
           {!tripState ? (
             <div className="bg-white/50 backdrop-blur-xl h-[600px] rounded-[2.5rem] border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-slate-400 transition-all duration-500 hover:border-indigo-300 hover:bg-white/80 group">
               <div className="p-8 bg-slate-100 rounded-full mb-6 group-hover:scale-110 group-hover:bg-indigo-50 transition-all duration-500">
-                <Plane size={64} className="opacity-20 group-hover:opacity-100 group-hover:text-indigo-500 transition-all duration-500" />
+                <Plane size={64} className={`transition-all duration-500 ${loading ? 'animate-pulse text-indigo-500 opacity-100' : 'opacity-20 group-hover:opacity-100 group-hover:text-indigo-500'}`} />
               </div>
-              <p className="font-extrabold text-2xl text-slate-700 tracking-tight">Awaiting Orders</p>
-              <p className="text-sm font-medium text-slate-500 mt-2 max-w-xs text-center leading-relaxed">Enter an intent in the Orchestrator panel to initiate the 5-Tier Data Spectrum.</p>
+              <p className="font-extrabold text-2xl text-slate-700 tracking-tight">{loading ? 'Orchestrating Logistics...' : 'Awaiting Orders'}</p>
+              <p className="text-sm font-medium text-slate-500 mt-2 max-w-xs text-center leading-relaxed">{loading ? 'Processing 5-Tier Data Spectrum. Please stand by.' : 'Enter an intent in the Orchestrator panel to initiate the 5-Tier Data Spectrum.'}</p>
             </div>
           ) : (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">

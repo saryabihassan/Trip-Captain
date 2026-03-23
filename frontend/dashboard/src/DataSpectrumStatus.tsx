@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, CircleDashed } from 'lucide-react';
+import { Check, CircleDashed, Loader2 } from 'lucide-react';
 
 interface Props {
   currentTier: number;
@@ -21,6 +21,7 @@ export const DataSpectrumStatus: React.FC<Props> = ({ currentTier }) => {
       <div className="relative pl-3">
         {tiers.map((tier, index) => {
           const isComplete = currentTier >= tier.t;
+          const isCurrent = currentTier === tier.t - 1; // Currently processing this tier
 
           return (
             <div key={tier.t} className="relative pb-8 last:pb-0">
@@ -34,14 +35,16 @@ export const DataSpectrumStatus: React.FC<Props> = ({ currentTier }) => {
                 <div className={`relative z-10 -ml-[23px] w-6 h-6 rounded-full flex items-center justify-center border-2 transition-all duration-500 bg-white ${
                   isComplete 
                     ? 'border-indigo-500 text-indigo-500 shadow-sm' 
-                    : 'border-slate-200 text-slate-300'
+                    : isCurrent
+                      ? 'border-indigo-400 text-indigo-500'
+                      : 'border-slate-200 text-slate-300'
                 }`}>
-                  {isComplete ? <Check size={12} strokeWidth={3} /> : <CircleDashed size={12} />}
+                  {isComplete ? <Check size={12} strokeWidth={3} /> : isCurrent ? <Loader2 size={12} className="animate-spin" /> : <CircleDashed size={12} />}
                 </div>
 
                 {/* Content */}
-                <div className={`-mt-1 transition-all duration-300 ${isComplete ? 'opacity-100' : 'opacity-40'}`}>
-                  <h4 className={`text-sm font-bold ${isComplete ? 'text-slate-800' : 'text-slate-500'}`}>
+                <div className={`-mt-1 transition-all duration-300 ${isComplete ? 'opacity-100' : isCurrent ? 'opacity-80' : 'opacity-40'}`}>
+                  <h4 className={`text-sm font-bold ${isComplete ? 'text-slate-800' : isCurrent ? 'text-indigo-600' : 'text-slate-500'}`}>
                     Tier {tier.t}: {tier.label}
                   </h4>
                   <p className="text-xs text-slate-400 mt-0.5 font-medium">{tier.desc}</p>
@@ -54,3 +57,4 @@ export const DataSpectrumStatus: React.FC<Props> = ({ currentTier }) => {
     </section>
   );
 };
+
