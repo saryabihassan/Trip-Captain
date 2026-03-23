@@ -1,25 +1,24 @@
-# Mission Brief: Topic 3 - trip_state.json Manager
+# Mission Brief: Topic 4 - Tier 1 API Ingestion
 
 ## Context
-We are initializing Phase 1 of the Trip Captain platform. The system relies on a central `trip_state.json` as the single source of truth for the 5-Tier Data Spectrum.
+Phase 1 of Trip Captain requires raw logistical data (Flights, Hotels, Weather) from external sources.
 
 ## Objective
-Implement a robust state manager in `backend/state_manager/` that handles all read/write operations to `trip_state.json`.
+Implement the Tier 1 API Ingestion logic in `backend/tier_1_ingestion/`.
 
 ## Data Tier
-- **Tier 1 & 2**: Initial state initialization and metadata management.
+- **Tier 1**: Raw data ingestion into `trip_state.json`.
 
 ## Technical Constraints
-1. **Schema Validation**: Every write operation MUST be validated against the `database_schema.json` using the `zod` library.
-2. **Persistence**: The state must be persisted to `/Users/saryabihassan/squadprojects/Trip Captain/trip_state.json`.
-3. **Thread Safety**: Implement basic file locking or atomic write operations to prevent state corruption during concurrent access.
-4. **State Transitions**: Define clear transitions for the `metadata.status` field (draft -> active -> completed/cancelled).
-5. **Output**: Provide the implementation in TypeScript.
+1. **Source**: Use a mockable API client (Axios) to simulate fetching travel data.
+2. **Schema Validation**: Use the `TripStateManager`'s `updateTierData(1, data)` method to ensure the data is validated against the schema before being persisted to `trip_state.json`.
+3. **Status Check**: Ensure the trip status is 'active' or 'draft' before ingestion.
+4. **Output**: TypeScript implementation that can be triggered to simulate a data fetch.
 
 ## Reference Files
 - `architecture_spec.md`
 - `database_schema.json`
-- `package.json` (for dependencies)
+- `backend/state_manager/TripStateManager.ts`
 
 ---
-*No fluff. No mocking Tier 1 data. Output only executable code.*
+*No fluff. No mocking Tier 1 data (use realistic structures). Output only executable code.*
