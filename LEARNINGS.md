@@ -4,6 +4,7 @@
 - **5-Tier Data Spectrum:** Strictly adhere to the Tiers (1: Ingestion, 2: NLP, 3: Synthesis, 4: Alerts, 5: Persona). Tier 2 should ideally follow Tier 1, and Tier 3 requires both.
 - **Single Source of Truth:** `trip_state.json` is the ground truth. All state changes MUST be validated against `database_schema.json` using the `TripStateManager`.
 - **Branching Policy:** Always commit directly to the `main` branch.
+- **Sub-Phase States:** Tier 3 isn't a single step; it involves multiple sub-phases: Synthesis (Feasibility), Audit (Financial), and Optimization (Scoring). Each sub-phase updates the same Tier 3 block but refines the data.
 
 ## Technical Implementation (TypeScript/ESM)
 - **Node.js ESM Compatibility:** 
@@ -22,4 +23,6 @@
 
 ## Potential Future Pitfalls
 - **Lookup Mappings:** Mapping natural language (Tier 2 "London") to technical codes (Tier 1 "LHR") is currently hardcoded for demonstration. A robust mapping service will be needed for Tier 3 synthesis as the project scales.
+- **Cross-Tier Validation (Delta Checking):** Tier 4 (Alerts) is most effective when it performs "Delta Checks" between different Tiers (e.g., comparing Tier 2 user intent with Tier 3 logistical results). This reveals discrepancies like requested duration vs. actual booking availability.
+- **State Observability:** Implementing "Validation Status" and "Optimization Scores" within the state schema significantly improves the observability of the automated planning process.
 - **Working Directory:** Always run execution commands from the project root to ensure `process.cwd()` resolves to the correct location for `trip_state.json`.
