@@ -1,28 +1,30 @@
-# Mission Brief: Topic 10 - Persona Filter Engine (Tier 5)
+# Mission Brief: Topic 11 - Conversational API Bridge
 
 ## Context
-Phase 1 of Trip Captain has a complete Tier 1-4 dataset in `trip_state.json`. We now need to implement the final tier: the Persona Filter Engine, which tailors the presentation of logistical data based on specific user personas.
+Phase 1 of Trip Captain requires a communication bridge between the user interface and the backend logic (NLP, State Manager, etc.).
 
 ## Objective
-Implement the Persona Filter Engine (Tier 5) in `frontend/tier_5_persona/`.
+Implement the Conversational API Bridge in `frontend/api_bridge/`.
 
 ## Data Tier
-- **Tier 5**: Persona Filter Engine.
+- **Cross-Tier**: Orchestrates Tiers 1-5 via an API.
 
 ## Technical Constraints
-1. **Source**: Read `tier_3_logistics` and `tier_4_alerts` from `trip_state.json`.
-2. **Logic**: Implement a filter that takes a persona (e.g., "Luxury", "Budget", "Family") and adapts the itinerary and alert presentation:
-    - **Luxury**: Prioritizes high-end accommodations and direct flights.
-    - **Budget**: Highlights cost-effective options and potential savings.
-    - **Family**: Emphasizes logistical ease and stability (e.g., direct flights, multi-room hotels).
-3. **Integration**: Use `TripStateManager.updateTierData(5, data)` to update the `tier_5_ui` block in `trip_state.json`.
-4. **Validation**: Ensure results conform to the `tier_5_ui` block in `database_schema.json`.
+1. **Source**: Create an Express-based API server.
+2. **Endpoint**: Implement `POST /api/chat` that accepts a user prompt.
+3. **Logic**:
+    - Receive `{ prompt: string }`.
+    - Trigger the `NLPParameterExtractor` (Tier 2).
+    - Trigger the `LogisticsSynthesisEngine` (Tier 3) if parameters are sufficient.
+    - Return the updated `trip_state.json` or a summary.
+4. **Environment**: Use the `PORT` defined in `.env`.
 5. **Output**: TypeScript implementation.
 
 ## Reference Files
 - `architecture_spec.md`
-- `database_schema.json`
 - `backend/state_manager/TripStateManager.ts`
+- `backend/tier_2_nlp/NLPParameterExtractor.ts`
+- `algorithms/tier_3_synthesis/LogisticsSynthesisEngine.ts`
 
 ---
 *No fluff. No mocking Tier 1 data. Output only executable code.*
